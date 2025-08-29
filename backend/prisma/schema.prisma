@@ -1,12 +1,16 @@
 generator client {
   provider = "prisma-client-js"
+   binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
   output   = "../generated/prisma"
+  
 }
 
 datasource db {
+  
   provider     = "mysql"
   url          = env("DATABASE_URL")
   relationMode = "prisma"
+  
 }
 
 model user {
@@ -38,7 +42,7 @@ model appointment {
   clinic   clinic?    @relation(fields: [clinicId], references: [id])
   area   area?    @relation(fields: [areaId], references: [id])
   user   user?    @relation(fields: [userId], references: [id])
-
+//  @@index([ appointmentNum, name, phoneNumber, address, age, gender, doctorName, clinicName, date, time, day, period, clinicId, userId, areaId]) // Explicit index
 }
 
 model archivedappointment {
@@ -63,6 +67,7 @@ model archivedappointment {
   area   area?    @relation(fields: [areaId], references: [id])
   user   user?    @relation(fields: [userId], references: [id])
   doctor   doctor?    @relation(fields: [doctorId], references: [id])
+
 }
 
 model area {

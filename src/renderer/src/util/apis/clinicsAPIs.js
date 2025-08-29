@@ -28,7 +28,7 @@ export const getAllClinics = async () => {
 }
 
 export const getClinicToEdit = async ({ id }) => {
-  const res = await fetch(`${url}/clinics/getClinicToEdit?id=${id}`)
+  let res = await fetch(`${url}/clinics/getClinicToEdit?id=${id}`)
   if (!res.ok) {
     throw Error('There was an issue while fetching clinics')
   }

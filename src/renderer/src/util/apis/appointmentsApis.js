@@ -73,7 +73,10 @@ export const getAllArchivedAppointments = async ({
 }
 
 export const getAllArea = async ({ area }) => {
-  const response = await fetch(`${url}/appointments/areas?area=${area}`)
+  let response
+  if (area) {
+    response = await fetch(`${url}/appointments/areas?area=${area}`)
+  }
   if (!response.ok) {
     throw Error('There was an issue while fetching areas!!s')
   }

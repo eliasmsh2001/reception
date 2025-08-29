@@ -33,7 +33,7 @@ export default function ConnectionLossDialog({ open }) {
             </h1>
             <h1 className="text-lg font-bold text-mainText text-center">
               الرجاء التأكد من الإتصال بالإنترنت والتأكد من الوصول الى السيرفر على العنوان
-              192.168.20.23
+              192.168.0.5
             </h1>
             <h2 className=" font-bold text-stone-600 text-center my-5">
               ستتم إعادة المحاولة تلقائياً كل 5 ثواني

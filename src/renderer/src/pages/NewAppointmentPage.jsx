@@ -11,6 +11,7 @@ import clsx from 'clsx'
 import { addNewAppointment, getAllArea } from '../util/apis/appointmentsApis'
 import { useReactToPrint } from 'react-to-print'
 import PrintableCard from '../components/printableComponents/PrintableCard'
+import { getAllClinics } from '../util/apis/clinicsAPIs'
 
 export const NewAppointmentPage = () => {
   const [gender, setGender] = React.useState('')
@@ -20,6 +21,7 @@ export const NewAppointmentPage = () => {
   const [areaValue, setAreaValue] = React.useState('')
   const [error, setError] = React.useState(null)
   const [btnIsDisabled, setbtnIsDisabled] = React.useState(false)
+  const formRef = React.useRef()
 
   const contentRef = React.useRef(null)
   const userId = JSON.parse(localStorage.getItem('user')).existingUser?.id
@@ -37,15 +39,19 @@ export const NewAppointmentPage = () => {
   const { mutate: addAppointment } = useMutation({
     mutationFn: addNewAppointment,
     mutationKey: ['appointments'],
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       setNewAppointment(data)
+      formRef.current.reset()
+      queryClient.invalidateQueries({ queryKey: ['appointments'] })
       setTimeout(() => {
         reactToPrintFn()
-      }, 500)
+      }, 600)
       setTimeout(() => {
         navigate('/home')
         setbtnIsDisabled(false)
       }, 600)
+      // socket?.close()
+      // reader?.abort()
     },
     onError: (error) => {
       setbtnIsDisabled(false)
@@ -53,37 +59,63 @@ export const NewAppointmentPage = () => {
     }
   })
 
+  const { data: clinics, isError } = useQuery({
+    queryKey: ['clinics'],
+    queryFn: getAllClinics,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 30 * 60 * 1000, // 30 minutes
+    refetchOnWindowFocus: false
+  })
+
   const { mutate: addDoc } = useMutation({
     mutationFn: addNewDoctor,
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['clinics', 'doctors'] })
+      queryClient.invalidateQueries({ queryKey: ['doctors'] })
       setChosenDoctor(data.name)
     }
   })
 
   const { data } = useQuery({
-    queryKey: ['clinics', 'doctors', chosenClinic],
-    queryFn: ({ signal }) => getAllDocs({ signal, clinic: chosenClinic }),
-    refetchInterval: 1000
+    queryKey: ['doctors', chosenClinic],
+    queryFn: ({ signal }) => getAllDocs({ signal, clinic: chosenClinic })
   })
 
   const { data: areas } = useQuery({
     queryKey: ['areas', areaValue],
-    queryFn: ({ signal }) => getAllArea({ signal, area: areaValue }),
-    refetchInterval: 1000
+    queryFn: ({ signal }) =>
+      getAllArea({
+        signal,
+        area: areaValue,
+        staleTime: 5 * 60 * 1000, // 5 minutes
+        cacheTime: 30 * 60 * 1000, // 30 minutes
+        refetchOnWindowFocus: false
+      })
   })
 
-  const handleSubmit = (e) => {
+  const handleSubmit = React.useCallback((e) => {
     e.preventDefault()
     const formData = new FormData(e.target)
     const data = Object.fromEntries(formData.entries())
 
     setbtnIsDisabled(true)
     addAppointment({ data, chosenClinic, chosenDoctor, gender, userId })
-  }
+  })
+
+  // React.useEffect(() => {
+  //   const form = document.getElementById('myForm')
+  //   const handleSubmit = (e) => {}
+
+  //   form.addEventListener('submit', handleSubmit)
+  //   return () => form.removeEventListener('submit', handleSubmit) // Cleanup
+  // }, [])
 
   return (
-    <form className=" flex flex-col items-center gap-10 relative" onSubmit={handleSubmit}>
+    <form
+      ref={formRef}
+      id="myForm"
+      className=" flex flex-col items-center gap-10 relative"
+      onSubmit={handleSubmit}
+    >
       <h1 className="absolute -top-20 right-20 text-white bg-secondaryText text-2xl font-extrabold py-2 w-44 rounded-lg text-center pointer-events-none">
         موعد جديد
       </h1>
@@ -156,7 +188,13 @@ export const NewAppointmentPage = () => {
           </div>
         </section>
         <section className="flex flex-col gap-4 py-4">
-          <ClinicSelectionField chosenClinic={chosenClinic} setChosenClinic={setChosenClinic} />
+          {clinics && clinics?.length > 0 && (
+            <ClinicSelectionField
+              chosenClinic={chosenClinic}
+              setChosenClinic={setChosenClinic}
+              clinics={clinics}
+            />
+          )}
           <div className={clsx({ 'opacity-40 pointer-events-none': chosenClinic === '' })}>
             <DoctorSelectionField
               addDoc={addDoc}

@@ -47,14 +47,14 @@ clinicsRouter.get('/getClinics', async (req, res) => {
     const clinics = await prisma.clinic.findMany({
       include: { appointments: true, archivedAppointments: true }
     })
-    const sortedClinics = clinics.sort(
-      (a, b) => b.archivedAppointments.length - a.archivedAppointments.length
-    )
+    // const sortedClinics = clinics.sort(
+    //   (a, b) => b.archivedAppointments.length - a.archivedAppointments.length
+    // )
 
-    let clinicsToGo = sortedClinics
+    let clinicsToGo = clinics
 
     if (currentPeriod === 'الفترة الليلية') {
-      clinicsToGo = sortedClinics.filter(
+      clinicsToGo = clinics.filter(
         (item) =>
           item.name === 'اطفال' ||
           item.name === 'ملاحظه النساء ' ||

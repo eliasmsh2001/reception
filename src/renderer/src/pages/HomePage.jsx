@@ -21,14 +21,17 @@ const HomePage = () => {
     isPending: appointmentsIsPending
   } = useQuery({
     queryKey: ['appointments'],
-    refetchInterval: 1000,
-    queryFn: getAllAppointments
+    queryFn: getAllAppointments,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 30 * 60 * 1000, // 30 minutes
+    refetchOnWindowFocus: false
   })
 
-  const { data: clinicsData, refetch: clinicsRefetch } = useQuery({
-    queryKey: ['clinics'],
+  const { data: clinicsData } = useQuery({
+    queryKey: ['clinics', data],
     queryFn: getAllClinics,
-    refetchInterval: 1000
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 30 * 60 * 1000 // 30 minutes
   })
 
   useEffect(() => {
@@ -47,7 +50,6 @@ const HomePage = () => {
     } else {
       setClinics(null)
       setClinicsError(true)
-      clinicsRefetch()
     }
   }, [data, clinicsData])
 

@@ -7,18 +7,18 @@ import clsx from 'clsx'
 import { addNewClinic, getAllClinics } from '../../util/apis/clinicsAPIs'
 import { queryClient } from '../../util/apis/httpUrl'
 
-const ClinicSelectionField = ({ chosenClinic, setChosenClinic }) => {
+const ClinicSelectionField = ({ chosenClinic, setChosenClinic, clinics }) => {
   const [isAddClinic, setIsAddClinic] = useState(false)
   const inputRef = useRef()
 
   const inputStyle = `border-2 border-stone-400 rounded-r-lg p-2 text-mainText font-bold outline-0 focus:border-secondaryText`
 
-  const {
-    data: clinics,
-    isError,
-    error,
-    refetch
-  } = useQuery({ queryKey: ['clinics'], queryFn: getAllClinics })
+  // const {
+  //   data: clinics,
+  //   isError,
+  //   error,
+  //   refetch
+  // } = useQuery({ queryKey: ['clinics'], queryFn: getAllClinics })
 
   const { mutate } = useMutation({
     mutationFn: addNewClinic,
@@ -63,18 +63,12 @@ const ClinicSelectionField = ({ chosenClinic, setChosenClinic }) => {
 
         {clinics && clinics?.length > 0 && (
           <ClinicSelectbox
-            clinics={clinics}
+            clinics={clinics?.sort(
+              (a, b) => b.archivedAppointments.length - a.archivedAppointments.length
+            )}
             chosenClinic={chosenClinic}
             setChosenClinic={setChosenClinic}
           />
-        )}
-        {isError && (
-          <div className="flex flex-cold items-center justify-center gap-4">
-            <h1 className="text-alert font-bold">حدث خطأ ما</h1>
-            <button className="text-white bg-mainBlue p-2 rounded-full" onClick={() => refetch()}>
-              أعد التحميل
-            </button>
-          </div>
         )}
       </div>
       {isAddClinic && (

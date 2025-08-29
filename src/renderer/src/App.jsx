@@ -41,7 +41,7 @@ function App() {
       }
     }
 
-    const intervalId = setInterval(checkBackend, 5000) // Check every 5 seconds
+    const intervalId = setInterval(checkBackend, 15000) // Check every 15 seconds
     checkBackend() // Initial check
 
     return () => clearInterval(intervalId)
@@ -57,11 +57,10 @@ function App() {
                 !فشل الإتصال بالسيرفر
               </h1>
               <h1 className="text-lg font-bold text-mainText text-center">
-                الرجاء التأكد من الإتصال بالإنترنت والتأكد من الوصول الى السيرفر على العنوان
-                192.168.20.23
+                الرجاء التأكد من الاتصال بالعنوان 192.168.0.5
               </h1>
               <h2 className=" font-bold text-stone-600 text-center my-5">
-                ستتم إعادة المحاولة تلقائياً كل 5 ثواني
+                ستتم إعادة المحاولة تلقائياً كل 15 ثانية
               </h2>
               <button
                 onClick={() => setConnectionState('')}
@@ -107,8 +106,6 @@ function App() {
                     element={user ? <ReportsPage /> : <Navigate to="/login" />}
                   >
                     <Route index element={<GlobalReport />} />
-                    {/* <Route path="areas" element={<AreasReport />} />
-                      <Route path="clinics" element={<ClinicsReport />} /> */}
                   </Route>
                 </>
               )}

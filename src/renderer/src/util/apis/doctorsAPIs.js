@@ -17,7 +17,10 @@ export const addNewDoctor = async ({ clinic, docName }) => {
 }
 
 export const getAllDocs = async ({ signal, clinic }) => {
-  const response = await fetch(`${url}/doctors/getDoctors?clinic=${clinic}`)
+  let response
+  if (clinic) {
+    response = await fetch(`${url}/doctors/getDoctors?clinic=${clinic}`)
+  }
   if (!response.ok) {
     throw Error('There was a problem with fetching doctors!!')
   }

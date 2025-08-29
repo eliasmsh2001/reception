@@ -5,6 +5,11 @@ const cron = require('node-cron')
 const appointmentsRouter = express.Router()
 const prisma = new PrismaClient()
 
+appointmentsRouter.use((err, req, res, next) => {
+  console.error(err)
+  res.status(500).send('Server error')
+})
+
 let date = new Date()
 let year = date.getFullYear() // 4-digit year (2023)
 let month = date.getMonth() // 0-11 (0 = January)
@@ -53,7 +58,6 @@ appointmentsRouter.get('/areas', async (req, res) => {
 
 appointmentsRouter.post('/addNewAppointment', async (req, res) => {
   const { data, gender, chosenClinic, chosenDoctor, userId } = req.body
-
   if (
     !data.name ||
     data.name === '' ||
@@ -63,9 +67,8 @@ appointmentsRouter.post('/addNewAppointment', async (req, res) => {
     !data.age ||
     data.age === '' ||
     !gender ||
-    !chosenClinic ||
-    !chosenDoctor ||
-    !userId
+    !chosenClinic
+    // !chosenDoctor ||
   ) {
     //....
     return res.status(406).json({
@@ -77,10 +80,10 @@ appointmentsRouter.post('/addNewAppointment', async (req, res) => {
 
   const existingClinic = await prisma.clinic.findUnique({
     where: { name: chosenClinic },
-    include: { appointments: true, doctor: true }
+    include: { appointments: true }
   })
 
-  if (existingClinic.numberLimit && existingClinic.numberLimit > 0) {
+  if (existingClinic.numberLimit && Number(existingClinic.numberLimit) > 0) {
     if (existingClinic.numberLimit <= existingClinic.appointments.length) {
       return res.status(405).json({
         success: false,
@@ -90,24 +93,24 @@ appointmentsRouter.post('/addNewAppointment', async (req, res) => {
     }
   }
 
-  const existingArea = await prisma.area.findUnique({ where: { name: data.address } })
-
-  let newArea
-
-  if (!existingArea) {
-    newArea = await prisma.area.create({ data: { name: data.address } })
-  }
-
-  let currentPeriod
-  if (date.getHours() >= 8 && date.getHours() < 14) {
-    currentPeriod = 'الفترة الصباحية'
-  } else if (date.getHours() >= 14 && date.getHours() < 20) {
-    currentPeriod = 'الفترة المسائية'
-  } else if (date.getHours() >= 20 || (date.getHours() >= 0 && date.getHours() < 8)) {
-    currentPeriod = 'الفترة الليلية'
-  }
-
   try {
+    const existingArea = await prisma.area.findUnique({ where: { name: data.address.trim() } })
+
+    let newArea
+
+    if (!existingArea) {
+      newArea = await prisma.area.create({ data: { name: data.address.trim() } })
+    }
+
+    let currentPeriod
+    if (date.getHours() >= 8 && date.getHours() < 14) {
+      currentPeriod = 'الفترة الصباحية'
+    } else if (date.getHours() >= 14 && date.getHours() < 20) {
+      currentPeriod = 'الفترة المسائية'
+    } else if (date.getHours() >= 20 || (date.getHours() >= 0 && date.getHours() < 8)) {
+      currentPeriod = 'الفترة الليلية'
+    }
+
     const newAppontment = await prisma.appointment.create({
       data: {
         name: data.name,
@@ -120,6 +123,7 @@ appointmentsRouter.post('/addNewAppointment', async (req, res) => {
         age: Number(data.age),
         gender: gender,
         doctorName: chosenDoctor,
+        // doctorName: 'Unknown',
         clinicName: chosenClinic,
         clinicId: existingClinic.id,
         date: `${year}-${month + 1}-${day}`,
@@ -151,7 +155,7 @@ appointmentsRouter.post('/addNewAppointment', async (req, res) => {
         areaId: existingArea ? existingArea.id : newArea.id,
         age: Number(data.age),
         gender: gender,
-        doctorName: chosenDoctor,
+        doctorName: 'Unknown',
         clinicName: chosenClinic,
         clinicId: existingClinic.id,
         date: `${year}-${month + 1}-${day}`,
@@ -160,6 +164,7 @@ appointmentsRouter.post('/addNewAppointment', async (req, res) => {
         time: time,
         period: currentPeriod,
         userId: userId,
+        // doctorId: 'Unknown'
         doctorId: existingClinic.doctor.find((item) => item.name === chosenDoctor)
           ? existingClinic.doctor.find((item) => item.name === chosenDoctor).id
           : 'Unknown'
@@ -173,11 +178,16 @@ appointmentsRouter.post('/addNewAppointment', async (req, res) => {
         // user: { connect: { id: userId } }
       }
     })
-
     res.json(newAppontment)
+    // res.send('new done')
   } catch (e) {
-    res.status(200).json({ error: 'There was an issue while adding new clinic!' })
-    // console.log(e)
+    // res.status(200).json({ error: 'There was an issue while adding new clinic!' })
+    console.log(e)
+    return res.status(420).json({
+      success: false,
+      status: 420,
+      message: 'max appointments'
+    })
   }
 })
 
