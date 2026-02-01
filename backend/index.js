@@ -25,14 +25,20 @@ app.use('/reports', reportsRouter)
 cron.schedule('* * * * * *', async () => {
   const hour = new Date().getHours()
   const today = new Date().getDate()
+  const minutes = new Date().getMinutes()
+
   let currentPeriod
 
-  if (hour >= 8 && hour < 14) {
-    currentPeriod = 'الفترة الصباحية'
+  if (hour >= 7 && hour < 14) {
+    hour === 7 && minutes < 45
+      ? (currentPeriod = 'الفترة الليلية')
+      : (currentPeriod = 'الفترة الصباحية')
   } else if (hour >= 14 && hour < 20) {
     currentPeriod = 'الفترة المسائية'
-  } else if ((hour >= 20 && hour <= 23) || (hour >= 0 && hour < 8)) {
-    currentPeriod = 'الفترة الليلية'
+  } else if ((hour >= 20 && hour <= 23) || (hour >= 0 && hour <= 7)) {
+    hour === 7 && minutes >= 45
+      ? (currentPeriod = 'الفترة الصباحية')
+      : (currentPeriod = 'الفترة الليلية')
   }
 
   try {
@@ -58,4 +64,4 @@ app.get('/health', async (req, res) => {
 })
 
 // app.listen(8081, '0.0.0.0', () => console.log('hello'))
-app.listen(3001, () => console.log('hello 3000'))
+app.listen(8080, () => console.log('hello 8080'))

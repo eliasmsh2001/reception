@@ -244,7 +244,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "D:\\DEV\\receptionApp\\backend\\generated\\prisma",
+      "value": "/home/elias/dev/reception/backend/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -253,7 +253,7 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "windows",
+        "value": "debian-openssl-3.0.x",
         "native": true
       },
       {
@@ -262,7 +262,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "D:\\DEV\\receptionApp\\backend\\prisma\\schema.prisma",
+    "sourceFilePath": "/home/elias/dev/reception/backend/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -285,8 +285,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  binaryTargets = [\"native\", \"linux-musl-openssl-3.0.x\"]\n  output        = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider     = \"mysql\"\n  url          = env(\"DATABASE_URL\")\n  relationMode = \"prisma\"\n}\n\nmodel user {\n  id                   String                @id @default(uuid())\n  username             String?               @db.Text\n  usersecret           String?               @db.Text\n  authority            String?               @db.Text\n  appointments         appointment[]\n  archivedAppointments archivedappointment[]\n}\n\nmodel appointment {\n  id             String  @id @default(uuid())\n  appointmentNum Int?\n  name           String?\n  phoneNumber    String?\n  address        String?\n  age            Int?\n  gender         String?\n  doctorName     String?\n  clinicName     String?\n  date           String?\n  time           String?\n  day            String?\n  period         String?\n  clinicId       String?\n  userId         String?\n  areaId         String?\n  clinic         clinic? @relation(fields: [clinicId], references: [id])\n  area           area?   @relation(fields: [areaId], references: [id])\n  user           user?   @relation(fields: [userId], references: [id])\n\n  @@index([id, appointmentNum, name, phoneNumber, address, age, gender, doctorName, clinicName, date, time, day, period, clinicId, userId, areaId]) // Explicit index\n}\n\nmodel archivedappointment {\n  id             String  @id @default(uuid())\n  appointmentNum Int?\n  name           String?\n  phoneNumber    String?\n  address        String?\n  age            Int?\n  gender         String?\n  doctorName     String?\n  clinicName     String?\n  date           String?\n  time           String?\n  day            String?\n  period         String?\n  clinicId       String?\n  areaId         String?\n  userId         String?\n  doctorId       String?\n  clinic         clinic? @relation(fields: [clinicId], references: [id])\n  area           area?   @relation(fields: [areaId], references: [id])\n  user           user?   @relation(fields: [userId], references: [id])\n  doctor         doctor? @relation(fields: [doctorId], references: [id])\n\n  @@index([id, appointmentNum, name, phoneNumber, address, age, gender, doctorName, clinicName, date, time, day, period, clinicId, userId, areaId]) // Explicit index\n}\n\nmodel area {\n  id                   String                @id @default(uuid())\n  name                 String                @unique\n  appointments         appointment[]\n  archivedAppointments archivedappointment[]\n}\n\nmodel clinic {\n  id                   String                @id @default(uuid())\n  name                 String                @unique\n  numberLimit          Int?\n  doctor               doctor[]\n  appointments         appointment[]\n  archivedAppointments archivedappointment[]\n}\n\nmodel doctor {\n  id                   String                @id @default(uuid())\n  name                 String?\n  clinicId             String?\n  clinic               clinic?               @relation(fields: [clinicId], references: [id])\n  archivedAppointments archivedappointment[]\n}\n",
-  "inlineSchemaHash": "dfb4cfb861bf0b67fa0ef1f4d348addab2835e6d70d40597a6c019f1adb83b61",
+  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  binaryTargets = [\"native\", \"linux-musl-openssl-3.0.x\"]\n  output        = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider     = \"mysql\"\n  url          = env(\"DATABASE_URL\")\n  relationMode = \"prisma\"\n}\n\nmodel user {\n  id                   String                @id @default(uuid())\n  username             String?               @db.Text\n  usersecret           String?               @db.Text\n  authority            String?               @db.Text\n  appointments         appointment[]\n  archivedAppointments archivedappointment[]\n}\n\nmodel appointment {\n  id             String  @id @default(uuid())\n  appointmentNum Int?\n  name           String?\n  phoneNumber    String?\n  address        String?\n  age            Int?\n  gender         String?\n  doctorName     String?\n  clinicName     String?\n  date           String?\n  time           String?\n  day            String?\n  period         String?\n  clinicId       String?\n  userId         String?\n  areaId         String?\n  clinic         clinic? @relation(fields: [clinicId], references: [id])\n  area           area?   @relation(fields: [areaId], references: [id])\n  user           user?   @relation(fields: [userId], references: [id])\n  //  @@index([ appointmentNum, name, phoneNumber, address, age, gender, doctorName, clinicName, date, time, day, period, clinicId, userId, areaId]) // Explicit index\n}\n\nmodel archivedappointment {\n  id             String  @id @default(uuid())\n  appointmentNum Int?\n  name           String?\n  phoneNumber    String?\n  address        String?\n  age            Int?\n  gender         String?\n  doctorName     String?\n  clinicName     String?\n  date           String?\n  time           String?\n  day            String?\n  period         String?\n  clinicId       String?\n  areaId         String?\n  userId         String?\n  doctorId       String?\n  clinic         clinic? @relation(fields: [clinicId], references: [id])\n  area           area?   @relation(fields: [areaId], references: [id])\n  user           user?   @relation(fields: [userId], references: [id])\n  doctor         doctor? @relation(fields: [doctorId], references: [id])\n}\n\nmodel area {\n  id                   String                @id @default(uuid())\n  name                 String                @unique\n  appointments         appointment[]\n  archivedAppointments archivedappointment[]\n}\n\nmodel clinic {\n  id                   String                @id @default(uuid())\n  name                 String                @unique\n  numberLimit          Int?\n  doctor               doctor[]\n  appointments         appointment[]\n  archivedAppointments archivedappointment[]\n}\n\nmodel doctor {\n  id                   String                @id @default(uuid())\n  name                 String?\n  clinicId             String?\n  clinic               clinic?               @relation(fields: [clinicId], references: [id])\n  archivedAppointments archivedappointment[]\n}\n",
+  "inlineSchemaHash": "d4f1a480e374bd431ba905aba5ccc18a1d2683ee08050ccf1a502d2d2a4ed31a",
   "copyEngine": true
 }
 
@@ -325,8 +325,8 @@ exports.PrismaClient = PrismaClient
 Object.assign(exports, Prisma)
 
 // file annotations for bundling tools to include these files
-path.join(__dirname, "query_engine-windows.dll.node");
-path.join(process.cwd(), "generated/prisma/query_engine-windows.dll.node")
+path.join(__dirname, "libquery_engine-debian-openssl-3.0.x.so.node");
+path.join(process.cwd(), "generated/prisma/libquery_engine-debian-openssl-3.0.x.so.node")
 
 // file annotations for bundling tools to include these files
 path.join(__dirname, "libquery_engine-linux-musl-openssl-3.0.x.so.node");

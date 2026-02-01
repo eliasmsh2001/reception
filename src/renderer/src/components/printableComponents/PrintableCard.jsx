@@ -15,22 +15,22 @@ const PrintableCard = ({ contentRef, item }) => {
       </div>
 
       <div>
-        <div className="flex gap-3 items-center justify-center text-xs">
+        {/* <div className="flex gap-3 items-center justify-center text-xs">
           <h1 className="text-stone-500 font-semibold">{item?.name ? item?.name : 'غير معروف'}</h1>
           <h1 className="text-mainText font-bold">:الاسم</h1>
-        </div>
+        </div> */}
         <div className="flex gap-3 items-center justify-center text-xs">
           <h1 className="text-stone-500 font-semibold">
             {item?.clinicName ? item?.clinicName : 'غير معروف'}
           </h1>
           <h1 className="text-mainText font-bold">:العيادة</h1>
         </div>
-        <div className="flex gap-3 items-center justify-center text-xs">
+        {/* <div className="flex gap-3 items-center justify-center text-xs">
           <h1 className="text-stone-500 font-semibold">
             {item?.doctorName ? item?.doctorName : 'غير معروف'}
           </h1>
           <h1 className="text-mainText font-bold">:الدكتور</h1>
-        </div>
+        </div> */}
         <div className="flex gap-3 items-center justify-center text-xs">
           <h1 className="text-mainText font-semibold">
             {item?.day ? item?.day : ''}

@@ -4,15 +4,27 @@ const dialogSlicer = createSlice({
   name: 'dialog',
   initialState: {
     dialog: '',
+    // clinicId: '',
     appointment: null,
     appointmentId: null,
     areasData: null,
     userId: null,
-    connectionState: null
+    connectionState: null,
+    clinic: null
   },
   reducers: {
     hadleOpenDialog(state, action) {
       state.dialog = action.payload
+    },
+
+    handleOpenAppointmentConfirmation(state, action) {
+      state.dialog = 'appointmentConfirmation'
+      state.clinic = action.payload
+    },
+
+    handleCloseAppointmentConfirmation(state, action) {
+      state.dialog = ''
+      state.clinicId = ''
     },
 
     handleOpenAppointmentDatails(state, action) {

@@ -35,7 +35,7 @@ const ClinicsTotalAppointmentsTable = ({ data, appointments }) => {
                 </React.Fragment>
               )
           )}
-        <tr className="bg-mainBlue">
+        {/* <tr className="bg-mainBlue">
           <td
             className={`text-sm font-semibold text-white border-l-2 border-black/35 px-2 py-1 w-72`}
           >
@@ -46,7 +46,7 @@ const ClinicsTotalAppointmentsTable = ({ data, appointments }) => {
           >
             {appointments?.length}
           </td>
-        </tr>
+        </tr> */}
       </tbody>
     </table>
   )

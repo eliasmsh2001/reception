@@ -5,7 +5,6 @@ import UseAuthContext from '../hooks/UseAuthContext'
 import LogoutComfirmationDialog from '../components/dialogs/LogoutComfirmationDialog'
 import CloseAppConfirmation from '../components/dialogs/CloseAppConfirmation'
 import waveImage from '../assets/wave.svg'
-import AppontmentDetails from '../components/dialogs/appontmentDetails'
 import { useEffect, useState } from 'react'
 import EditArchivedAppointment from '../components/dialogs/EditArchivedAppointment'
 import AreasReportTableDialog from '../components/dialogs/AreasReportTableDialog'
@@ -13,6 +12,7 @@ import DeleteUserConfirmation from '../components/dialogs/DeleteUserConfirmation
 import AddNewUserDialog from '../components/dialogs/AddNewUserDialog'
 import EditUserDialog from '../components/dialogs/EditUserDialog'
 import ConnectionLossDialog from '../components/dialogs/ConnectionLossDialog'
+import AppointmentConfirmationDialog from '../components/dialogs/AppointmentConfirmationDialog'
 
 const RootLayout = () => {
   const [time, setTime] = useState(new Date().toTimeString().slice(0, 5))
@@ -21,7 +21,7 @@ const RootLayout = () => {
   const [currentPeriod, setCurrentPeriod] = useState(null)
   const [username, setUserName] = useState()
   const hour = new Date().getHours()
-
+  const minutes = new Date().getMinutes()
   useEffect(() => {
     const timerID = setInterval(() => {
       setTime(new Date().toTimeString().slice(0, 5))
@@ -29,8 +29,10 @@ const RootLayout = () => {
     setUserName(JSON.parse(localStorage.getItem('user'))?.existingUser?.username)
 
     // Cleanup the interval on component unmount
-    if (hour >= 8 && hour < 14) {
-      setCurrentPeriod('الفترة الصباحية')
+    if (hour >= 7 && hour < 14) {
+      hour === 7 && minutes < 45
+        ? setCurrentPeriod('الفترة الليلية')
+        : setCurrentPeriod('الفترة الصباحية')
     } else if (hour >= 14 && hour < 20) {
       setCurrentPeriod('الفترة المسائية')
     } else if ((hour >= 20 && hour <= 23) || (hour >= 0 && hour < 8)) {
@@ -42,7 +44,7 @@ const RootLayout = () => {
   //
   return (
     <>
-      <main className="relative flex  flex-row-reverse ">
+      <main className="relative flex  flex-row-reverse h-screen">
         <img src={waveImage} className="fixed -z-10" />
         <MainSidebar />
         <section className=" flex flex-col gap-4 left-5 top-5 w-full">
@@ -67,12 +69,12 @@ const RootLayout = () => {
       </main>
       <LogoutComfirmationDialog />
       <CloseAppConfirmation />
-      <AppontmentDetails />
       <EditArchivedAppointment />
       <AreasReportTableDialog />
       <DeleteUserConfirmation />
       <AddNewUserDialog />
       <EditUserDialog />
+      <AppointmentConfirmationDialog />
     </>
   )
 }

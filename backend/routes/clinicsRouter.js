@@ -10,13 +10,18 @@ let currentPeriod
 cron.schedule('* * * * * *', async () => {
   const hour = new Date().getHours()
   const today = new Date().getDate()
+  const minutes = new Date().getMinutes()
 
-  if (hour >= 8 && hour < 14) {
-    currentPeriod = 'الفترة الصباحية'
+  if (hour >= 7 && hour < 14) {
+    hour === 7 && minutes < 45
+      ? (currentPeriod = 'الفترة الليلية')
+      : (currentPeriod = 'الفترة الصباحية')
   } else if (hour >= 14 && hour < 20) {
     currentPeriod = 'الفترة المسائية'
-  } else if ((hour >= 20 && hour <= 23) || (hour >= 0 && hour < 8)) {
-    currentPeriod = 'الفترة الليلية'
+  } else if ((hour >= 20 && hour <= 23) || (hour >= 0 && hour <= 7)) {
+    hour === 7 && minutes >= 45
+      ? (currentPeriod = 'الفترة الصباحية')
+      : (currentPeriod = 'الفترة الليلية')
   }
 
   try {
@@ -60,7 +65,7 @@ clinicsRouter.get('/getClinics', async (req, res) => {
           item.name === 'ملاحظه النساء ' ||
           item.name === 'ملاحظه الرجال ' ||
           item.name === 'نساء ولاده' ||
-          item.name === 'صحه عامه '
+          item.name === 'الصحة العامة'
       )
     }
 

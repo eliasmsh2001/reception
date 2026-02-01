@@ -58,25 +58,26 @@ appointmentsRouter.get('/areas', async (req, res) => {
 
 appointmentsRouter.post('/addNewAppointment', async (req, res) => {
   const { data, gender, chosenClinic, chosenDoctor, userId } = req.body
-  if (
-    !data.name ||
-    data.name === '' ||
-    !data.address ||
-    data.address == '' ||
-    data.address.length <= 3 ||
-    !data.age ||
-    data.age === '' ||
-    !gender ||
-    !chosenClinic
-    // !chosenDoctor ||
-  ) {
-    //....
-    return res.status(406).json({
-      success: false,
-      status: 406,
-      message: 'falsey data'
-    })
-  }
+
+  // if (
+  //   !data.name ||
+  //   data.name === '' ||
+  //   !data.address ||
+  //   data.address == '' ||
+  //   data.address.length <= 3 ||
+  //   !data.age ||
+  //   data.age === '' ||
+  //   !gender ||
+  //   !chosenClinic
+  //   // !chosenDoctor ||
+  // ) {
+  //   //....
+  //   return res.status(406).json({
+  //     success: false,
+  //     status: 406,
+  //     message: 'falsey data'
+  //   })
+  // }
 
   const existingClinic = await prisma.clinic.findUnique({
     where: { name: chosenClinic },
@@ -94,37 +95,73 @@ appointmentsRouter.post('/addNewAppointment', async (req, res) => {
   }
 
   try {
-    const existingArea = await prisma.area.findUnique({ where: { name: data.address.trim() } })
+    // const existingArea = await prisma.area.findUnique({ where: { name: data.address.trim() } })
 
-    let newArea
+    // let newArea
 
-    if (!existingArea) {
-      newArea = await prisma.area.create({ data: { name: data.address.trim() } })
-    }
+    // if (!existingArea) {
+    //   newArea = await prisma.area.create({ data: { name: data.address.trim() } })
+    // }
 
     let currentPeriod
-    if (date.getHours() >= 8 && date.getHours() < 14) {
-      currentPeriod = 'الفترة الصباحية'
+    if (date.getHours() >= 7 && date.getHours() < 14) {
+      date.getHours() === 7 && date.getMinutes() < 45
+        ? (currentPeriod = 'الفترة الليلية')
+        : (currentPeriod = 'الفترة الصباحية')
     } else if (date.getHours() >= 14 && date.getHours() < 20) {
       currentPeriod = 'الفترة المسائية'
-    } else if (date.getHours() >= 20 || (date.getHours() >= 0 && date.getHours() < 8)) {
-      currentPeriod = 'الفترة الليلية'
+    } else if (date.getHours() >= 20 || (date.getHours() >= 0 && date.getHours() <= 7)) {
+      date.getHours() === 7 && minutes >= 45
+        ? (currentPeriod = 'الفترة الصباحية')
+        : (currentPeriod = 'الفترة الليلية')
     }
+
+    // const newAppontment = await prisma.appointment.create({
+    //   data: {
+    //     name: data.name,
+    //     // phoneNumber: data.phoneNumber,
+    //     phoneNumber: 'Unknown',
+    //     appointmentNum:
+    //       existingClinic.appointments.length < 1 ? 1 : existingClinic.appointments.length + 1,
+    //     address: existingArea ? existingArea.name : newArea.name,
+    //     areaId: existingArea ? existingArea.id : newArea.id,
+    //     age: Number(data.age),
+    //     gender: gender,
+    //     doctorName: chosenDoctor,
+    //     // doctorName: 'Unknown',
+    //     clinicName: chosenClinic,
+    //     clinicId: existingClinic.id,
+    //     date: `${year}-${month + 1}-${day}`,
+    //     day: arabicDays[dayOfWeek],
+    //     time: time,
+    //     period: currentPeriod,
+    //     userId: userId
+
+    //     // clinic: {
+    //     //   connect: { id: existingClinic.id }
+    //     // },
+    //     // area: {
+    //     //   connect: { id: existingArea.id }
+    //     // },
+    //     // user: { connect: { id: userId } }
+    //     // doctor: { connect: { id: '' } }
+    //   }
+    // })
 
     const newAppontment = await prisma.appointment.create({
       data: {
-        name: data.name,
+        name: 'Unknown',
         // phoneNumber: data.phoneNumber,
         phoneNumber: 'Unknown',
         appointmentNum:
           existingClinic.appointments.length < 1 ? 1 : existingClinic.appointments.length + 1,
-        address: existingArea ? existingArea.name : newArea.name,
-        areaId: existingArea ? existingArea.id : newArea.id,
-        age: Number(data.age),
-        gender: gender,
-        doctorName: chosenDoctor,
+        address: 'Unknown',
+        areaId: 'Unknown',
+        age: 0,
+        gender: 'Unknown',
+        doctorName: 'Unknown',
         // doctorName: 'Unknown',
-        clinicName: chosenClinic,
+        clinicName: existingClinic.name,
         clinicId: existingClinic.id,
         date: `${year}-${month + 1}-${day}`,
         day: arabicDays[dayOfWeek],
@@ -143,18 +180,54 @@ appointmentsRouter.post('/addNewAppointment', async (req, res) => {
       }
     })
 
+    // const newArchivedAppontment = await prisma.archivedappointment.create({
+    //   data: {
+    //     id: newAppontment.id,
+    //     name: data.name,
+    //     phoneNumber: 'unknown',
+    //     // phoneNumber: data.phoneNumber,
+    //     appointmentNum:
+    //       existingClinic.appointments.length < 1 ? 1 : existingClinic.appointments.length + 1,
+    //     address: data.address && data.address.length > 2 ? data.address : 'غير معروف',
+    //     areaId: existingArea ? existingArea.id : newArea.id,
+    //     age: Number(data.age),
+    //     gender: gender,
+    //     doctorName: 'Unknown',
+    //     clinicName: chosenClinic,
+    //     clinicId: existingClinic.id,
+    //     date: `${year}-${month + 1}-${day}`,
+    //     // date: `2025-4-3`,
+    //     day: arabicDays[dayOfWeek],
+    //     time: time,
+    //     period: currentPeriod,
+    //     userId: userId,
+    //     // doctorId: 'Unknown'
+    //     doctorId: existingClinic.doctor.find((item) => item.name === chosenDoctor)
+    //       ? existingClinic.doctor.find((item) => item.name === chosenDoctor).id
+    //       : 'Unknown'
+
+    //     // clinic: {
+    //     //   connect: { id: existingClinic.id }
+    //     // },
+    //     // area: {
+    //     //   connect: { id: existingArea.id }
+    //     // },
+    //     // user: { connect: { id: userId } }
+    //   }
+    // })
+
     const newArchivedAppontment = await prisma.archivedappointment.create({
       data: {
         id: newAppontment.id,
-        name: data.name,
+        name: 'unknown',
         phoneNumber: 'unknown',
         // phoneNumber: data.phoneNumber,
         appointmentNum:
           existingClinic.appointments.length < 1 ? 1 : existingClinic.appointments.length + 1,
-        address: data.address && data.address.length > 2 ? data.address : 'غير معروف',
-        areaId: existingArea ? existingArea.id : newArea.id,
-        age: Number(data.age),
-        gender: gender,
+        address: 'unknown',
+        areaId: 'unknown',
+        age: 0,
+        gender: 'unknown',
         doctorName: 'Unknown',
         clinicName: chosenClinic,
         clinicId: existingClinic.id,
@@ -165,9 +238,7 @@ appointmentsRouter.post('/addNewAppointment', async (req, res) => {
         period: currentPeriod,
         userId: userId,
         // doctorId: 'Unknown'
-        doctorId: existingClinic.doctor.find((item) => item.name === chosenDoctor)
-          ? existingClinic.doctor.find((item) => item.name === chosenDoctor).id
-          : 'Unknown'
+        doctorId: 'unknown'
 
         // clinic: {
         //   connect: { id: existingClinic.id }
